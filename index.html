@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Standards Chord Charts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#EDF0F3;--panel:#fff;--ink:#16202B;--mute:#5B6776;--line:#CBD2DA;--acc:#2447D8;--onacc:#fff;--root:#D9822B;--key:#fff;--blk:#16202B;--err:#C0392B;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E141B;--panel:#16202B;--ink:#E6EBF1;--mute:#93A0B0;--line:#2A3644;--acc:#7C9BFF;--onacc:#0E141B;--root:#F0A04B;--key:#E6EBF1;--blk:#05080C;--err:#FF8A7A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E141B;--panel:#16202B;--ink:#E6EBF1;--mute:#93A0B0;--line:#2A3644;--acc:#7C9BFF;--onacc:#0E141B;--root:#F0A04B;--key:#E6EBF1;--blk:#05080C;--err:#FF8A7A;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Bricolage Grotesque",system-ui,sans-serif}
+.app{display:grid;grid-template-columns:270px 1fr;gap:20px;max-width:1200px;margin:0 auto;padding:20px;touch-action:manipulation}
+@media(max-width:800px){.app{grid-template-columns:1fr;padding:12px}}
+h1{font-size:1.6rem;font-weight:800;margin:0 0 4px;letter-spacing:-.02em}
+.sub{color:var(--mute);font-size:.9rem;margin:0 0 14px}
+input,select,button,textarea{font:inherit;color:inherit}
+input[type=search]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+.list{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;max-height:70vh;overflow:auto}
+.list button{width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.list button small{color:var(--mute);white-space:nowrap}
+.list button:hover{background:var(--panel)}
+.list button[aria-current=true]{background:var(--acc);color:var(--onacc)}
+.list button[aria-current=true] small{color:var(--onacc);opacity:.85}
+.empty{color:var(--mute);font-size:.9rem;padding:9px 10px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,h2:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:16px}
+.bar h2{margin:0;font-size:2rem;font-weight:800;letter-spacing:-.02em;flex:1 1 100%}
+.meta{flex:1 1 100%;margin:-10px 0 0;color:var(--mute);font-size:.9rem}
+label,.grp{display:flex;flex-direction:column;font-size:.8rem;color:var(--mute);gap:3px}
+select{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:var(--panel);color:var(--ink);padding:8px 12px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.acts{display:flex;gap:8px}
+.acts button,.row button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-height:40px}
+.detail{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 60px 16px 16px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin-bottom:20px}
+@media(min-width:801px){.detail{position:sticky;top:8px;z-index:5;box-shadow:0 8px 24px rgba(0,0,0,.12)}}
+.detail .nm{font-size:2.6rem;font-weight:800;line-height:1}
+.detail .nm sup{font-size:1.3rem;font-weight:600}
+.detail p{margin:6px 0 0;color:var(--mute)}
+.sec{margin-bottom:22px}
+.sec h3{margin:0 0 8px;font-size:1.05rem}
+.sec h3 span{color:var(--mute);font-weight:400;margin-left:6px;font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+.cell{display:flex;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--panel);min-height:60px}
+.ch{flex:1;background:none;border:0;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.ch+.ch{border-left:1px dashed var(--line)}
+.ch:hover{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+.ch[aria-pressed=true]{background:color-mix(in srgb,var(--acc) 18%,transparent)}
+.ch b{font-size:1.25rem;font-weight:800}
+.ch sup{font-size:.8rem;font-weight:600}
+.ch svg{width:100%;max-width:84px;height:auto}
+.ch svg.pn{max-width:120px}
+.foot{color:var(--mute);font-size:.8rem;margin-top:24px;max-width:70ch}
+.s{stroke:var(--ink);stroke-width:.8;fill:none}
+.t{fill:var(--ink)}
+.tog{display:none}
+.addbtn{display:block;width:100%;margin-top:10px;padding:12px;border:1px dashed var(--line);border-radius:8px;background:none;cursor:pointer}
+.x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:22px;background:var(--bg);cursor:pointer;font-size:1.1rem}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);width:min(520px,calc(100% - 24px));padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog label{margin-bottom:12px}
+dialog input,dialog textarea{padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);width:100%}
+dialog textarea{min-height:160px;font-family:ui-monospace,monospace}
+.row{display:flex;gap:8px;justify-content:flex-end}
+.row .go{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.err{color:var(--err);font-size:.85rem;min-height:1.2em}
+@media(max-width:800px){
+.tog{display:flex;width:100%;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;min-height:48px}
+#picker{display:none;margin-top:10px}
+aside.open #picker{display:block}
+.list{max-height:50vh}
+.list button{min-height:48px;align-items:center}
+.bar h2{font-size:1.5rem}
+.bar label,.bar .grp{flex:1 1 120px}
+.seg button{padding:10px 12px;min-height:44px;flex:1}
+select{min-height:44px}
+.detail{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;border-radius:16px 16px 0 0;max-height:60vh;overflow:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.25);justify-content:center}
+main.hassel{padding-bottom:55vh}
+.ch{padding:10px 2px}
+}
+@media print{
+aside,.bar label,.bar .grp,.acts,.x,.detail{display:none!important}
+.app{display:block;padding:0}
+body{background:#fff;color:#000}
+.cell,.grid{border-color:#999}
+.ch{cursor:default}
+.sec{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<h1>Standards chord charts</h1>
+<p class="sub"><span id="cnt"></span> tunes. Pick one, then tap any chord for a closer look.</p>
+<button id="tog" class="tog" aria-expanded="false">Choose a song</button>
+<div id="picker"><input type="search" id="q" placeholder="Search songs, “blues”, “rhythm”" aria-label="Search songs">
+<label style="flex-direction:row;align-items:center;gap:8px;margin-top:8px;min-height:44px;font-size:.9rem"><input type="checkbox" id="pd"> Public domain only</label>
+<ul class="list" id="list"></ul>
+<button id="add" class="addbtn">Add your own song</button></div>
+</aside>
+<main id="main"></main>
+</div>
+<dialog id="dlg"><form id="frm" method="dialog"><h2 id="dt" style="margin:0 0 12px">Add your own song</h2>
+<label>Title<input id="nt" type="text"></label>
+<label>Key, such as Bb or Gm<input id="nk" type="text"></label>
+<label>Chords: one section per line, bars separated by |, chords within a bar by spaces. A name before a colon is optional. Slash chords like Bb/D work.<textarea id="nb" placeholder="A: Dm7 G7 | Cmaj7 | Am7 D7 | Gm7 C7&#10;B: Fmaj7 | Bb7 | Em7b5 A7 | Dm7"></textarea></label>
+<div class="err" id="ne" role="alert"></div>
+<div class="row"><button type="button" id="nc">Cancel</button><button id="ns" class="go">Add song</button></div></form></dialog>
+<script>
+const FL=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'],SH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const LP={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const adj=a=>a==="#"?1:a==="b"?-1:0;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const okChord=ch=>/^[A-G][b#]?(?:[A-Za-z0-9#+()\-]|\/9)*(\/[A-G][b#]?)?$/.test(ch);
+const keyInfo=k=>{const m=String(k).match(/^([A-G])([b#]?)(m?)$/);return m&&{tonic:(LP[m[1]]+adj(m[2])+12)%12,minor:m[3]?1:0}};
+// Shared forms. Rhythm changes in Bb, and 12-bar blues heads.
+const RCA="Bbmaj7 G7|Cm7 F7|Dm7 G7|Cm7 F7|Fm7 Bb7|Ebmaj7 Edim7|Bbmaj7 G7|Cm7 F7",RCB="D7|D7|G7|G7|C7|C7|F7|F7",
+RCL="Bbmaj7 G7|Cm7 F7|Dm7 G7|Cm7 F7|Fm7 Bb7|Ebmaj7 Edim7|Bbmaj7 F7|Bb6";
+const rc=(t,o)=>({t,key:"Bb",note:"Rhythm changes",sec:[{n:"A",x:2,b:RCA},{n:"B",b:RCB},{n:"Last A",b:RCL}],...o});
+const BBJ="Bb7|Eb7|Bb7|Fm7 Bb7|Eb7|Edim7|Bb7 G7b9|Cm7 F7|Dm7 G7|Cm7 F7|Bb7 G7|Cm7 F7";
+const blues=(t,key,b,note)=>({t,key,note:note||"12-bar blues",sec:[{n:"Blues",b}]});
+// Common changes as typically played. Bars split by "|", chords in a bar by spaces. Edit or add songs here.
+// pd:1 marks US works published before 1931.
+const SONGS=[
+{t:"All the Things You Are",key:"Ab",sec:[
+{n:"A",b:"Fm7|Bbm7|Eb7|Abmaj7|Dbmaj7|Dm7 G7|Cmaj7|Cmaj7"},
+{n:"A",b:"Cm7|Fm7|Bb7|Ebmaj7|Abmaj7|Am7 D7|Gmaj7|Gmaj7"},
+{n:"B",b:"Am7|D7|Gmaj7|Gmaj7|F#m7|B7|Emaj7|C7#5"},
+{n:"A",b:"Fm7|Bbm7|Eb7|Abmaj7|Dbmaj7|Dbm7|Cm7|Bdim7|Bbm7|Eb7|Abmaj7|Gm7b5 C7b9"}]},
+{t:"Autumn Leaves",key:"Gm",sec:[
+{n:"A",x:2,b:"Cm7|F7|Bbmaj7|Ebmaj7|Am7b5|D7b9|Gm7|Gm7"},
+{n:"B",b:"Am7b5|D7b9|Gm7|Gm7|Cm7|F7|Bbmaj7|Ebmaj7"},
+{n:"C",b:"Am7b5|D7b9|Gm7 Gb7|Fm7 E7|Ebmaj7|Am7b5 D7b9|Gm6|Gm6"}]},
+{t:"Blue Bossa",key:"Cm",sec:[
+{n:"Form",b:"Cm7|Cm7|Fm7|Fm7|Dm7b5|G7b9|Cm7|Cm7|Ebm7|Ab7|Dbmaj7|Dbmaj7|Dm7b5|G7b9|Cm7|Dm7b5 G7b9"}]},
+blues("Blues for Alice","F","Fmaj7|Em7b5 A7b9|Dm7 G7|Cm7 F7|Bb7|Bbm7 Eb7|Am7 D7b9|Abm7 Db7|Gm7|C7|Fmaj7 D7b9|Gm7 C7","Bird blues"),
+blues("Bb Jazz Blues","Bb",BBJ),
+{t:"Fly Me to the Moon",key:"Am",sec:[
+{n:"A",b:"Am7|Dm7|G7|Cmaj7 C7|Fmaj7|Bm7b5|E7|Am7 A7"},
+{n:"B",b:"Dm7|G7|Cmaj7|Am7|Dm7|G7|Cmaj7|Bm7b5 E7"},
+{n:"A",b:"Am7|Dm7|G7|Cmaj7 C7|Fmaj7|Bm7b5|E7|Am7 A7"},
+{n:"C",b:"Dm7|G7|Cmaj7|Am7|Dm7|G7|C6|Bm7b5 E7"}]},
+{t:"The Girl from Ipanema",key:"F",sec:[
+{n:"A",x:2,b:"Fmaj7|Fmaj7|G7|G7|Gm7|Gb7|Fmaj7|Gb7"},
+{n:"B",b:"Gbmaj7|Gbmaj7|B7|B7|F#m7|F#m7|D7|D7|Gm7|Gm7|Eb7|Eb7|Am7|D7b9|Gm7|C7b9"},
+{n:"Last A",b:"Fmaj7|Fmaj7|G7|G7|Gm7|Gb7|Fmaj7|Fmaj7"}]},
+{t:"Misty",key:"Eb",sec:[
+{n:"A",b:"Ebmaj7|Bbm7 Eb7|Abmaj7|Abm7 Db7|Ebmaj7 Cm7|Fm7 Bb7|Gm7 C7|Fm7 Bb7"},
+{n:"A",b:"Ebmaj7|Bbm7 Eb7|Abmaj7|Abm7 Db7|Ebmaj7 Cm7|Fm7 Bb7|Ebmaj7|Ebmaj7"},
+{n:"B",b:"Bbm7|Eb7b9|Abmaj7|Abmaj7|Am7 D7|Gm7 C7|Fm7 C7|Fm7 Bb7"},
+{n:"A",b:"Ebmaj7|Bbm7 Eb7|Abmaj7|Abm7 Db7|Ebmaj7 Cm7|Fm7 Bb7|Ebmaj7|Ebmaj7"}]},
+{t:"Satin Doll",key:"C",sec:[
+{n:"A",x:2,b:"Dm7 G7|Dm7 G7|Em7 A7|Em7 A7|Am7 D7|Abm7 Db7|Cmaj7|Cmaj7"},
+{n:"B",b:"Gm7 C7|Gm7 C7|Fmaj7|Fmaj7|Am7 D7|Am7 D7|G7|G7"},
+{n:"Last A",b:"Dm7 G7|Dm7 G7|Em7 A7|Em7 A7|Am7 D7|Abm7 Db7|Cmaj7|Cmaj7"}]},
+{t:"Tune Up",key:"D",sec:[
+{n:"Form",b:"Em7|A7|Dmaj7|Dmaj7|Dm7|G7|Cmaj7|Cmaj7|Cm7|F7|Bbmaj7|Bbmaj7|Em7 A7|Dmaj7|Dmaj7|Dmaj7"}]},
+rc("I Got Rhythm",{pd:1}),
+rc("Oleo"),rc("Anthropology"),rc("Rhythm-a-Ning"),rc("Cotton Tail"),
+blues("Now’s the Time","F","F7|Bb7|F7|F7|Bb7|Bb7|F7|D7|Gm7|C7|F7 D7|Gm7 C7"),
+blues("Billie’s Bounce","F","F7|Bb7|F7|Cm7 F7|Bb7|Bdim7|F7|Am7 D7|Gm7|C7|F7 D7|Gm7 C7"),
+blues("Blue Monk","Bb","Bb7|Eb7|Bb7|Bb7|Eb7|Eb7|Bb7|G7|Cm7|F7|Bb7 G7|Cm7 F7"),
+blues("Straight, No Chaser","F","F7|Bb7|F7|F7|Bb7|Bb7|F7|F7|C7|Bb7|F7|C7"),
+blues("Bags’ Groove","F","F7|Bb7|F7|F7|Bb7|Bb7|F7|F7|C7|Bb7|F7|C7"),
+blues("C Jam Blues","C","C7|F7|C7|C7|F7|F7|C7|C7|G7|F7|C7|G7"),
+blues("Tenor Madness","Bb",BBJ),
+blues("Sonnymoon for Two","Bb","Bb7|Eb7|Bb7|Bb7|Eb7|Eb7|Bb7|Bb7|F7|Eb7|Bb7|F7"),
+blues("Blue Train","Eb","Eb7|Ab7|Eb7|Eb7|Ab7|Ab7|Eb7|Eb7|Bb7|Ab7|Eb7|Bb7"),
+blues("Au Privave","F","F6|Gm7 C7|F6|Cm7 F7|Bb7|Bbm7 Eb7|Am7 D7|Abm7 Db7|Gm7|C7|Am7 D7|Gm7 C7","Bird blues"),
+blues("Freddie Freeloader","Bb","Bb7|Bb7|Bb7|Bb7|Eb7|Eb7|Bb7|Bb7|F7|Eb7|Ab7|Bb7"),
+blues("All Blues","G","G7|G7|G7|G7|Gm7|Gm7|G7|G7|D7#9|Eb7#9 D7#9|G7|G7","12-bar blues in 6/4"),
+blues("Minor Blues in C","Cm","Cm7|Cm7|Cm7|Cm7|Fm7|Fm7|Cm7|Cm7|Dm7b5|G7|Cm7|G7","Minor blues"),
+blues("Mr. P.C.","Cm","Cm7|Cm7|Cm7|Cm7|Fm7|Fm7|Cm7|Cm7|Ab7|G7|Cm7|G7","Minor blues"),
+blues("Equinox","C#m","C#m7|C#m7|C#m7|C#m7|F#m7|F#m7|C#m7|C#m7|A7|G#7|C#m7|C#m7","Minor blues"),
+{t:"So What",key:"Dm",note:"Modal",sec:[
+{n:"A",x:2,b:"Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7"},
+{n:"B",b:"Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7"},
+{n:"Last A",b:"Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7"}]},
+{t:"Impressions",key:"Dm",note:"Modal",sec:[
+{n:"A",x:2,b:"Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7"},
+{n:"B",b:"Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7|Ebm7"},
+{n:"Last A",b:"Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7|Dm7"}]},
+{t:"Giant Steps",key:"B",sec:[{n:"Form",b:"Bmaj7 D7|Gmaj7 Bb7|Ebmaj7|Am7 D7|Gmaj7 Bb7|Ebmaj7 F#7|Bmaj7|Fm7 Bb7|Ebmaj7|Am7 D7|Gmaj7|C#m7 F#7|Bmaj7|Fm7 Bb7|Ebmaj7|C#m7 F#7"}]},
+{t:"All of Me",key:"C",sec:[
+{n:"First 16",b:"C6|C6|E7|E7|A7|A7|Dm7|Dm7|E7|E7|Am7|Am7|D7|D7|Dm7|G7"},
+{n:"Last 16 (ending varies by chart)",b:"C6|C6|E7|E7|A7|A7|Dm7|Dm7|F|Fm6|C6|A7|Dm7|G7|C6|C6"}]},
+{t:"Take the A Train",key:"C",sec:[
+{n:"A",x:2,b:"C6|C6|D7#11|D7#11|Dm7|G7|C6|Dm7 G7"},
+{n:"B",b:"Fmaj7|Fmaj7|Fmaj7|Fmaj7|D7|D7|Dm7|G7"},
+{n:"Last A",b:"C6|C6|D7#11|D7#11|Dm7|G7|C6|C6"}]},
+{t:"Summertime",key:"Am",sec:[
+{n:"Form",b:"Am6|E7|Am6|Am6|Dm7|Dm7|Bm7b5|E7|Am6|E7|Am6|A7|Dm7 G7|Cmaj7 F7|Bm7b5 E7|Am6"}]},
+{t:"Stella by Starlight",key:"Bb",sec:[
+{n:"First 16",b:"Em7b5|A7|Cm7|F7|Fm7|Bb7|Ebmaj7|Ab7|Bbmaj7|Em7b5 A7|Dm7|Bbm7 Eb7|Fmaj7|Em7b5 A7|Am7b5|D7"},
+{n:"Last 16",b:"G7#5|G7#5|Cm7|Cm7|Ab7|Ab7|Bbmaj7|Bbmaj7|Em7b5|A7|Dm7b5|G7|Cm7b5|F7|Bbmaj7|Bbmaj7"}]},
+{t:"Solar",key:"Cm",sec:[{n:"Form",b:"Cm(maj7)|Cm(maj7)|Gm7|C7|Fmaj7|Fmaj7|Fm7|Bb7|Ebmaj7|Ebm7 Ab7|Dbmaj7|Dm7b5 G7"}]},
+{t:"There Will Never Be Another You",key:"Eb",sec:[
+{n:"First 16",b:"Ebmaj7|Ebmaj7|Dm7b5|G7b9|Cm7|Cm7|Bbm7|Eb7|Abmaj7|Db7|Ebmaj7|Cm7|F7|F7|Fm7|Bb7"},
+{n:"Last 16",b:"Ebmaj7|Ebmaj7|Dm7b5|G7b9|Cm7|Cm7|Bbm7|Eb7|Abmaj7|Db7|Gm7|C7|Fm7|Bb7|Eb6|Fm7 Bb7"}]},
+{t:"Have You Met Miss Jones?",key:"F",sec:[
+{n:"A",b:"Fmaj7|D7b9|Gm7|C7|Am7 Dm7|Gm7 C7|Am7 D7|Gm7 C7"},
+{n:"A",b:"Fmaj7|D7b9|Gm7|C7|Am7 Dm7|Gm7 C7|Cm7|F7"},
+{n:"B",b:"Bbmaj7|Abm7 Db7|Gbmaj7|Em7 A7|Dmaj7|Abm7 Db7|Gbmaj7|Gm7 C7"},
+{n:"A",b:"Fmaj7|D7b9|Gm7|C7|Am7 Dm7|Gm7 C7|Fmaj7|Gm7 C7"}]},
+{t:"Just Friends",key:"G",sec:[
+{n:"First 16",b:"Cmaj7|Cmaj7|Cm7|F7|Gmaj7|Gmaj7|Bbm7|Eb7|Am7|D7|Gmaj7|Em7|A7|A7|Am7|D7"},
+{n:"Last 16",b:"Cmaj7|Cmaj7|Cm7|F7|Gmaj7|Gmaj7|Bbm7|Eb7|Am7|D7|Bm7|E7|Am7|D7|G6|Am7 D7"}]},
+{t:"Sweet Georgia Brown",key:"F",pd:1,sec:[
+{n:"A",b:"D7|D7|G7|G7|C7|C7|F6|F6"},
+{n:"B",b:"D7|D7|G7|G7|Dm7|A7|Dm7|A7"},
+{n:"A",b:"D7|D7|G7|G7|C7|C7|F6|F6"},
+{n:"C",b:"D7|D7|G7|G7|F6 F#dim7|Gm7 C7|F6|Gm7 C7"}]},
+{t:"Honeysuckle Rose",key:"F",pd:1,sec:[
+{n:"A",x:2,b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|Cm7 F7"},
+{n:"B",b:"Cm7 F7|Cm7 F7|Bb6|Bb6|Dm7 G7|Dm7 G7|Gm7|C7"},
+{n:"Last A",b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|Gm7 C7"}]},
+{t:"On the Sunny Side of the Street",key:"C",pd:1,sec:[
+{n:"A",x:2,b:"C6|E7|F6|G7|Am7|D7|Dm7|G7"},
+{n:"B",b:"Gm7|C7|Fmaj7|Fmaj7|D7|D7|Dm7|G7"},
+{n:"Last A",b:"C6|E7|F6|G7|Am7|D7|Dm7 G7|C6"}]},
+{t:"Blue in Green",key:"Dm",sec:[{n:"Form",b:"Bbmaj7#11|A7#9|Dm7 Db7|Cm7 F7|Bbmaj7|A7#9|Dm7|E7#9|Am7|Dm7"}]},
+{t:"Cantaloupe Island",key:"Fm",sec:[{n:"Form",b:"Fm7|Fm7|Fm7|Fm7|Db7|Db7|Db7|Db7|Dm7|Dm7|Dm7|Dm7|Fm7|Fm7|Fm7|Fm7"}]},
+{t:"Maiden Voyage",key:"D",note:"Modal",sec:[
+{n:"A",x:2,b:"D7sus|D7sus|D7sus|D7sus|F7sus|F7sus|F7sus|F7sus"},
+{n:"B",b:"Eb7sus|Eb7sus|Eb7sus|Eb7sus|C#m7|C#m7|C#m7|C#m7"},
+{n:"Last A",b:"D7sus|D7sus|D7sus|D7sus|F7sus|F7sus|F7sus|F7sus"}]},
+{t:"Song for My Father",key:"Fm",sec:[
+{n:"A",x:2,b:"Fm7|Fm7|Eb7|Eb7|Db7|C7|Fm7|Fm7"},
+{n:"B",b:"Eb7|Eb7|Fm7|Fm7|Eb7|Db7 C7|Fm7|Fm7"}]},
+{t:"In a Sentimental Mood",key:"F",sec:[
+{n:"A",b:"Dm Dm(maj7)|Dm7 Dm6|Gm Gm(maj7)|Gm7 Gm6|Em7b5|A7|Dm7 G7|Gm7 C7"},
+{n:"A",b:"Dm Dm(maj7)|Dm7 Dm6|Gm Gm(maj7)|Gm7 Gm6|Em7b5|A7|Gm7 C7|Fmaj7"},
+{n:"B",b:"Dbmaj7 Bbm7|Ebm7 Ab7|Dbmaj7 Bbm7|Ebm7 Ab7|Dbmaj7 Bbm7|Ebm7 Ab7|Dbmaj7|Gm7 C7"},
+{n:"A",b:"Dm Dm(maj7)|Dm7 Dm6|Gm Gm(maj7)|Gm7 Gm6|Em7b5|A7|Gm7 C7|Fmaj7"}]},
+{t:"Softly, as in a Morning Sunrise",key:"Cm",sec:[
+{n:"A",b:"Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Dm7b5 G7"},
+{n:"A",b:"Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Gm7b5 C7"},
+{n:"B",b:"Fm7|Bb7|Ebmaj7|Abmaj7|Dm7b5|G7|Cm7|Dm7b5 G7"},
+{n:"A",b:"Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Dm7b5 G7|Cm7|Cm7"}]},
+{t:"On Green Dolphin Street",key:"Eb",sec:[
+{n:"First 16",b:"Ebmaj7|Ebmaj7|Ebm7|Ebm7|F7/Eb|F7/Eb|Emaj7/Eb|Emaj7/Eb|Fm7|Bb7|Ebmaj7|Ebmaj7|Abm7|Db7|Gbmaj7|Fm7 Bb7"},
+{n:"Last 16",b:"Ebmaj7|Ebmaj7|Ebm7|Ebm7|F7/Eb|F7/Eb|Emaj7/Eb|Emaj7/Eb|Fm7|Bb7|Gm7|C7|Fm7|Bb7|Ebmaj7|Fm7 Bb7"}]},
+{t:"Lady Bird",key:"C",sec:[{n:"Form",b:"Cmaj7|Cmaj7|Fm7|Bb7|Cmaj7|Cmaj7|Bbm7|Eb7|Abmaj7|Abmaj7|Am7|D7|Dm7|G7|Cmaj7 Ebmaj7|Abmaj7 Dbmaj7"}]},
+{t:"Doxy",key:"Bb",sec:[{n:"Form",b:"Bb7 Ab7|G7|C7|F7|Bb7 Ab7|G7|C7 F7|Bb7 F7|Bb7|Bb7|Eb7|Edim7|Bb7 Ab7|G7|C7 F7|Bb7 F7"}]},
+{t:"St. Thomas",key:"C",note:"Calypso",sec:[{n:"A",x:2,b:"C6 A7|Dm7 G7|C6 A7|Dm7 G7|C6 C7|F6 F#dim7|C6/G G7|C6"}]},
+{t:"Cherokee",key:"Bb",sec:[
+{n:"A",b:"Bbmaj7|Bbmaj7|Fm7|Bb7|Ebmaj7|Ebmaj7|Ab7|Ab7|Bbmaj7|Bbmaj7|C7|C7|Cm7|Cm7|F7|F7"},
+{n:"A",b:"Bbmaj7|Bbmaj7|Fm7|Bb7|Ebmaj7|Ebmaj7|Ab7|Ab7|Bbmaj7|Bbmaj7|C7|C7|Cm7|F7|Bb6|Bb6"},
+{n:"B",b:"C#m7|F#7|Bmaj7|Bmaj7|Bm7|E7|Amaj7|Amaj7|Am7|D7|Gmaj7|Gmaj7|Gm7|C7|Cm7|F7"},
+{n:"A",b:"Bbmaj7|Bbmaj7|Fm7|Bb7|Ebmaj7|Ebmaj7|Ab7|Ab7|Bbmaj7|Bbmaj7|C7|C7|Cm7|F7|Bb6|Bb6"}]},
+{t:"A Night in Tunisia",key:"Dm",sec:[
+{n:"A",x:2,b:"Eb7|Dm6|Eb7|Dm6|Eb7|Dm6|Em7b5 A7|Dm6"},
+{n:"B",b:"Am7b5|D7|Gm6|Gm6|Gm7b5|C7|Fmaj7|Em7b5 A7"},
+{n:"Last A",b:"Eb7|Dm6|Eb7|Dm6|Eb7|Dm6|Em7b5 A7|Dm6"}]},
+{t:"One Note Samba",key:"Bb",note:"Bossa nova",sec:[
+{n:"A",x:2,b:"Dm7|Db7|Cm7|B7b5|Dm7|Db7|Cm7|B7b5"},
+{n:"B",b:"Ebm7|Ab7|Dbmaj7|Dbmaj7|Dbm7|Gb7|Bmaj7|Cm7 B7b5"},
+{n:"Last A",b:"Dm7|Db7|Cm7|B7b5|Cm7|B7b5|Bb6|Bb6"}]},
+{t:"Caravan",key:"Fm",sec:[
+{n:"A",x:2,b:"C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|Fm6|Fm6|Fm6|Fm6"},
+{n:"B",b:"F7|F7|F7|F7|Bb7|Bb7|Bb7|Bb7|Eb7|Eb7|Eb7|Eb7|Ab6|Ab6|G7|G7"},
+{n:"Last A",b:"C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|C7b9|Fm6|Fm6|Fm6|Fm6"}]},
+rc("Moose the Mooche"),rc("Lester Leaps In"),rc("Dexterity"),
+{t:"Scrapple from the Apple",key:"F",note:"Honeysuckle Rose A, rhythm-changes bridge",sec:[
+{n:"A",x:2,b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|Gm7 C7"},
+{n:"B",b:"A7|A7|D7|D7|G7|G7|C7|C7"},
+{n:"Last A",b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|F6"}]},
+{t:"Half Nelson",key:"C",note:"Lady Bird changes",sec:[{n:"Form",b:"Cmaj7|Cmaj7|Fm7|Bb7|Cmaj7|Cmaj7|Bbm7|Eb7|Abmaj7|Abmaj7|Am7|D7|Dm7|G7|Cmaj7 Ebmaj7|Abmaj7 Dbmaj7"}]},
+blues("Walkin’","F","F7|Bb7|F7|Cm7 F7|Bb7|Bb7|F7|D7|Gm7|C7|F7 D7|Gm7 C7"),
+blues("Things Ain’t What They Used to Be","F","F7|Bb7|F7|F7|Bb7|Bdim7|F7|D7|Gm7|C7|F7 D7|Gm7 C7"),
+blues("Cool Blues","C","C7|F7|C7|Gm7 C7|F7|F#dim7|C7|Em7 A7|Dm7|G7|C7 A7|Dm7 G7"),
+blues("Bessie’s Blues","Eb","Eb7|Ab7|Eb7|Eb7|Ab7|Ab7|Eb7|Eb7|Bb7|Ab7|Eb7|Bb7"),
+blues("Sandu","Eb","Eb7|Ab7|Eb7|Bbm7 Eb7|Ab7|Adim7|Eb7|Gm7 C7|Fm7|Bb7|Eb7 C7|Fm7 Bb7"),
+blues("Birk’s Works","Fm","Fm7|Fm7|Fm7|Fm7|Bbm7|Bbm7|Fm7|Fm7|Db7|C7|Fm7|C7","Minor blues"),
+{t:"Milestones",key:"Gm",note:"Modal",sec:[
+{n:"A",x:2,b:"Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7"},
+{n:"B",x:2,b:"Am7|Am7|Am7|Am7|Am7|Am7|Am7|Am7"},
+{n:"Last A",b:"Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7"}]},
+{t:"Chameleon",key:"Bbm",note:"Vamp",sec:[{n:"Vamp",b:"Bbm7|Eb7|Bbm7|Eb7"}]},
+{t:"When the Saints Go Marching In",key:"F",pd:1,note:"Traditional",sec:[
+{n:"Form",b:"F|F|F|F|F|F|C7|C7|F|F7|Bb|Bbm|F|C7|F|F"}]}
+];
+// Guitar voicings: strings 6..1, offsets from the root fret, null = muted. Each type has a 6th-string-root
+// and (where available) a 5th-string-root shape; the one that sits lower on the neck is used.
+const SHAPES={
+maj7:[{rs:6,f:[0,null,1,1,0,null]},{rs:5,f:[null,0,2,1,2,null]}],
+m7:[{rs:6,f:[0,null,0,0,0,null]},{rs:5,f:[null,0,2,0,1,null]}],
+"7":[{rs:6,f:[0,null,0,1,0,null]},{rs:5,f:[null,0,2,0,2,null]}],
+m7b5:[{rs:6,f:[0,null,0,0,-1,null]},{rs:5,f:[null,0,1,0,1,null]}],
+dim7:[{rs:6,f:[0,null,-1,0,-1,null]},{rs:5,f:[null,0,1,-1,1,null]}],
+"6":[{rs:6,f:[0,null,-1,1,0,null]},{rs:5,f:[null,0,2,-1,2,null]}],
+m6:[{rs:6,f:[0,null,-1,0,0,null]},{rs:5,f:[null,0,2,-1,1,null]}],
+mmaj7:[{rs:6,f:[0,null,1,0,0,null]},{rs:5,f:[null,0,2,1,1,null]}],
+"7sus":[{rs:6,f:[0,null,0,2,0,null]},{rs:5,f:[null,0,2,0,3,null]}],
+"7alt":[{rs:6,f:[0,null,0,1,1,null]}],"7#9":[{rs:5,f:[null,0,-1,0,1,null]}],
+"9":[{rs:5,f:[null,0,-1,0,0,null]}],"7b9":[{rs:5,f:[null,0,-1,0,-1,null]}]};
+// Qualities whose guitar shape contains exactly the written chord tones.
+const EXACT=["maj7","m7","7","m7b5","dim7","6","m6","7sus","9","7b9","7#9","m(maj7)","mmaj7","mMaj7"];
+const IV={maj7:[0,4,7,11],m7:[0,3,7,10],"7":[0,4,7,10],m7b5:[0,3,6,10],dim7:[0,3,6,9],"6":[0,4,7,9],m6:[0,3,7,9],mmaj7:[0,3,7,11],
+"9":[0,4,7,10,14],"7alt":[0,4,8,10,15],"7#9":[0,4,7,10,15],"7b9":[0,4,7,10,13],"7sus":[0,5,7,10],sus:[0,5,7],aug:[0,4,8],"69":[0,4,7,9,14],
+maj:[0,4,7],m:[0,3,7],"13":[0,4,10,14,21],"7#11":[0,4,7,10,18]};
+const GMAP={maj:"maj7",m:"m7","13":"9","7#11":"7",sus:"7sus",aug:"maj7","69":"6"};
+// Scale degree of each interval for spelling note names; DOV overrides where a type spells it differently.
+const LET="CDEFGAB",DEG=[0,1,1,2,2,3,4,4,5,5,6,6];
+const DOV={dim7:{9:6},"7alt":{8:4,15:1},"7#9":{15:1},aug:{8:4},"7#11":{18:3}};
+function parse(s){const m=s.match(/^([A-G])([b#]?)((?:[^\/]|\/9)*)(?:\/([A-G])([b#]?))?$/);
+const pc=(LP[m[1]]+adj(m[2])+12)%12,q=m[3];
+const bass=m[4]?{pc:(LP[m[4]]+adj(m[5])+12)%12,n:m[4]+m[5]}:null;
+const ty=/^m\(?(maj|M)7/.test(q)?"mmaj7":/^(maj|M)(7|9|13)/.test(q)?"maj7":/^m7b5/.test(q)?"m7b5":/^(dim|o)/.test(q)?"dim7":
+/^m6/.test(q)?"m6":/^(6\/9|69)/.test(q)?"69":/^6/.test(q)?"6":/^m(7|9|11|13)/.test(q)?"m7":/^m(?!aj)/.test(q)?"m":
+/^7#9$/.test(q)?"7#9":/^7(alt|#9|#5|b13|\+)/.test(q)?"7alt":/^7b9/.test(q)?"7b9":/^sus/.test(q)?"sus":/^(7|9|13)sus/.test(q)?"7sus":
+/^7#11/.test(q)?"7#11":/^13/.test(q)?"13":/^9/.test(q)?"9":/^7/.test(q)?"7":/^(aug|\+)/.test(q)?"aug":"maj";
+return{pc,q,ty,bass}}
+function spell(root,c){const L=LET.indexOf(root[0]);return IV[c.ty].map(i=>{const o=DOV[c.ty]&&DOV[c.ty][i];
+const l=LET[(L+(o!==undefined?o:DEG[i%12]))%7];const a=((c.pc+i-LP[l])%12+18)%12-6;return l+(a>0?"#".repeat(a):"b".repeat(-a))})}
+function names(tonic,minor){const maj=(tonic+(minor?3:0))%12;return[2,7,9,4,11,6].includes(maj)?SH:FL}
+function guitar(c){const key=SHAPES[c.ty]?c.ty:GMAP[c.ty]||"maj7";let best=null;
+for(const sh of SHAPES[key]){const open=sh.rs===6?4:9;let r=(c.pc-open+12)%12||12;
+const mn=Math.min(...sh.f.filter(o=>o!==null));if(r+mn<1)r+=12;
+if(!best||r<best.r)best={sh,r}}
+const sh=best.sh,fr=sh.f.map(o=>o===null?null:best.r+o);const fs=fr.filter(f=>f>0);const st=Math.max(...fs)<=5?1:Math.min(...fs);
+let o=`<svg viewBox="0 0 66 84" role="img" aria-label="Guitar voicing">`;
+for(let j=0;j<=5;j++)o+=`<line class="s" x1="10" x2="55" y1="${16+j*11}" y2="${16+j*11}"${j===0&&st===1?' style="stroke-width:3"':''}/>`;
+for(let i=0;i<6;i++){const x=10+i*9;o+=`<line class="s" x1="${x}" x2="${x}" y1="16" y2="71"/>`;const f=fr[i];
+if(f===null)o+=`<text class="t" x="${x}" y="11" font-size="8" text-anchor="middle">×</text>`;
+else if(f===0)o+=`<circle class="s" cx="${x}" cy="8" r="2.6"/>`;
+else o+=`<circle cx="${x}" cy="${16+(f-st)*11+5.5}" r="4" fill="${i===(6-sh.rs)?'var(--root)':'var(--acc)'}"/>`}
+if(st>1)o+=`<text class="t" x="58" y="${16+5.5+3}" font-size="8">${st}</text>`;
+return o+"</svg>"}
+function pcs(c){return IV[c.ty].map(i=>c.pc+i).concat(c.bass?[c.bass.pc]:[])}
+function piano(c){const on=pcs(c).map(p=>p%12);const W=[0,0,1,1,2,3,3,4,4,5,5,6],B=[1,3,6,8,10];let w="",b="";
+for(let t=0;t<24;t++){const n=t%12,o=Math.floor(t/12);const act=on.includes(n);const fill=act?(t===c.pc?"var(--root)":"var(--acc)"):null;
+if(B.includes(n)){const x=(o*7+W[n]+1)*10-3;b+=`<rect x="${x}" y="0" width="6" height="22" fill="${fill||'var(--blk)'}" stroke="var(--blk)" stroke-width=".5"/>`}
+else{w+=`<rect x="${(o*7+W[n])*10}" y="0" width="10" height="36" fill="${fill||'var(--key)'}" stroke="var(--ink)" stroke-width=".6"/>`}}
+return`<svg class="pn" viewBox="0 0 140 36" role="img" aria-label="Piano voicing">${w}${b}</svg>`}
+const $=id=>document.getElementById(id);
+const KEY="jazzcharts.custom",PREF="jazzcharts.prefs";
+const validSong=s=>s&&typeof s.t==="string"&&keyInfo(s.key)&&Array.isArray(s.sec)&&s.sec.length>0&&
+s.sec.every(x=>x&&typeof x.n==="string"&&typeof x.b==="string"&&x.b.split("|").every(bar=>bar.trim().split(/\s+/).every(okChord)));
+try{JSON.parse(localStorage.getItem(KEY)||"[]").filter(validSong).forEach(s=>SONGS.push({t:s.t,key:s.key,sec:s.sec.map(x=>({n:x.n,b:x.b})),custom:1}))}catch(e){}
+SONGS.forEach(s=>Object.assign(s,keyInfo(s.key)));
+function saveCustom(){try{localStorage.setItem(KEY,JSON.stringify(SONGS.filter(s=>s.custom).map(({t,key,sec})=>({t,key,sec}))))}catch(e){}}
+const base=t=>t.replace(/^(the|a|an)\s+/i,"");
+const order=()=>SONGS.map((s,i)=>({s,i})).sort((a,b)=>base(a.s.t).localeCompare(base(b.s.t)));
+let P={};try{P=JSON.parse(localStorage.getItem(PREF)||"{}")||{}}catch(e){}
+const saved=SONGS.findIndex(s=>s.t===P.song);
+let S={i:saved>=0?saved:order()[0].i,shift:0,inst:["guitar","piano","both","none"].includes(P.inst)?P.inst:"guitar",sel:null,q:"",pd:false};
+function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst}))}catch(e){}}
+function render(){const sg=SONGS[S.i];const tonic=(sg.tonic+S.shift)%12,nm=names(tonic,sg.minor);
+const a=document.activeElement;let fk=null;
+if(a&&a.dataset){if(a.dataset.n!==undefined)fk='[data-n="'+a.dataset.n+'"]';else if(a.dataset.i)fk='[data-i="'+a.dataset.i+'"]';else if(a.id==="key")fk="#key"}
+const sym=ch=>{const p=parse(ch);const root=S.shift===0?ch.match(/^[A-G][b#]?/)[0]:nm[(p.pc+S.shift)%12];
+const bass=p.bass?{pc:(p.bass.pc+S.shift)%12,n:S.shift===0?p.bass.n:nm[(p.bass.pc+S.shift)%12]}:null;
+const suf=p.q+(bass?"/"+bass.n:"");return{...p,pc:(p.pc+S.shift)%12,bass,root,suf,full:root+suf}};
+const keyOpts=[...Array(12)].map((_,k)=>{const t=(sg.tonic+k)%12;return`<option value="${k}"${k===S.shift?" selected":""}>${names(t,sg.minor)[t]}${sg.minor?"m":""}${k===0?" (common)":""}</option>`}).join("");
+const dia=c=>S.inst==="none"?"":(S.inst==="piano"?piano(c):guitar(c))+(S.inst==="both"?piano(c):"");
+const meta=[sg.note,sg.pd&&"Public domain in the US",sg.custom&&"Your song"].filter(Boolean);
+let h=`<div class="bar"><h2 tabindex="-1" id="ttl">${esc(sg.t)}</h2>${meta.length?`<p class="meta">${esc(meta.join(" · "))}</p>`:""}
+<label>Key<select id="key">${keyOpts}</select></label>
+<div class="grp"><span id="dl">Diagrams</span><span class="seg" role="group" aria-labelledby="dl">${[["guitar","Guitar"],["piano","Piano"],["both","Both"],["none","Off"]].map(([k,l])=>`<button data-i="${k}" aria-pressed="${S.inst===k}">${l}</button>`).join("")}</span></div>
+${sg.custom?`<div class="acts"><button id="editS">Edit</button><button id="delS">Delete</button></div>`:""}</div>`;
+if(S.sel){const c=sym(S.sel);const approx=!EXACT.includes(c.q);
+h+=`<div class="detail"><button class="x" id="closeD" aria-label="Close detail">✕</button>${guitar(c).replace('<svg','<svg style="width:130px"')}<div>${piano(c).replace('<svg','<svg style="width:min(100%,420px)"')}</div>
+<div><div class="nm">${esc(c.root)}<sup>${esc(c.suf)}</sup></div><p>Notes: ${spell(c.root,c).join(" ")}${c.bass?`, bass ${esc(c.bass.n)}`:""}<br>Root in orange. Guitar shows a movable jazz voicing, using the 5th-string-root shape when it sits lower.${approx?"<br>This chord’s guitar diagram is a simplified stand-in: some extensions or alterations aren’t shown.":""}</p></div></div>`}
+let n=0;
+sg.sec.forEach(s=>{const bars=s.b.split("|");h+=`<section class="sec"><h3>${esc(s.n)}<span>${bars.length} bars${s.x?` · play ×${esc(s.x)}`:""}</span></h3><div class="grid">`;
+bars.forEach(bar=>{h+=`<div class="cell">`;bar.trim().split(/\s+/).forEach(ch=>{const c=sym(ch);const on=S.sel&&S.sel===ch;
+h+=`<button class="ch" data-n="${n++}" data-c="${esc(ch)}" aria-pressed="${!!on}" aria-label="${esc(c.full)}"><span><b>${esc(c.root)}</b><sup>${esc(c.suf)}</sup></span>${dia(c)}</button>`});h+="</div>"});h+="</div></section>"});
+h+=`<p class="foot">Chords are the commonly played changes for each standard, entered by hand in the key most often used, not copied from any published book. Charts vary between books and players, so check them against your favorite recording. “Public domain” refers to the song itself (US works published before 1931); chord progressions on their own aren’t copyrightable. Use “Add your own song” to build out your library; custom songs are saved on this device.</p>`;
+$("main").innerHTML=h;
+$("main").classList.toggle("hassel",!!S.sel);
+savePrefs();
+if(fk){const el=document.querySelector(fk);if(el)el.focus({preventScroll:true})}}
+// One set of delegated handlers on #main, so re-rendering never strands focus.
+let lastN=null;
+function closeDetail(){S.sel=null;render();const el=document.querySelector('[data-n="'+lastN+'"]');if(el)el.focus({preventScroll:true})}
+$("main").addEventListener("click",e=>{const t=e.target.closest("button,select");if(!t)return;
+if(t.id==="closeD")return closeDetail();
+if(t.id==="editS")return openDlg(S.i);
+if(t.id==="delS"){if(confirm("Delete “"+SONGS[S.i].t+"” from this device?")){SONGS.splice(S.i,1);saveCustom();pick(order()[0].i)}return}
+if(t.dataset.i){S.inst=t.dataset.i;render();return}
+if(t.dataset.c!==undefined){const y=t.getBoundingClientRect().top;lastN=t.dataset.n;S.sel=S.sel===t.dataset.c?null:t.dataset.c;render();
+// Keep the tapped chord where it was, and out from under the sticky detail panel.
+const el=document.querySelector('[data-n="'+lastN+'"]');if(!el||!matchMedia("(min-width:801px)").matches)return;
+scrollBy(0,el.getBoundingClientRect().top-y);const d=document.querySelector(".detail");
+if(d){const lim=d.getBoundingClientRect().bottom+8,top=el.getBoundingClientRect().top;if(top<lim)scrollBy(0,top-lim)}}});
+$("main").addEventListener("change",e=>{if(e.target.id==="key"){S.shift=+e.target.value;render()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel&&!$("dlg").open)closeDetail()});
+function renderList(){const rows=order().filter(({s})=>(s.t+" "+(s.note||"")).toLowerCase().includes(S.q)&&(!S.pd||s.pd));
+$("cnt").textContent=SONGS.length;
+$("list").innerHTML=rows.length?rows.map(({s,i})=>
+`<li><button data-s="${i}" aria-current="${i===S.i}">${esc(s.t)}<small>${s.pd?"public domain · ":""}${s.custom?"yours · ":""}${esc(s.key)}</small></button></li>`).join(""):`<li class="empty">No matching songs.</li>`}
+function pick(i){S.i=i;S.shift=0;S.sel=null;renderList();render()}
+$("list").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;
+pick(+b.dataset.s);
+document.querySelector("aside").classList.remove("open");$("tog").setAttribute("aria-expanded","false");scrollTo(0,0);$("ttl").focus({preventScroll:true})});
+$("q").oninput=e=>{S.q=e.target.value.toLowerCase();renderList()};
+$("pd").onchange=e=>{S.pd=e.target.checked;renderList()};
+$("tog").onclick=()=>{const o=document.querySelector("aside").classList.toggle("open");$("tog").setAttribute("aria-expanded",o)};
+// Add and edit share one dialog; ed is the index being edited, or null when adding.
+let ed=null;
+function openDlg(i){ed=i;const s=i===null?null:SONGS[i];
+$("dt").textContent=s?"Edit song":"Add your own song";$("ns").textContent=s?"Save changes":"Add song";
+$("nt").value=s?s.t:"";$("nk").value=s?s.key:"";
+$("nb").value=s?s.sec.map(x=>(x.n==="Form"?"":x.n+": ")+x.b.split("|").join(" | ")).join("\n"):"";
+$("ne").textContent="";$("dlg").showModal()}
+$("add").onclick=()=>openDlg(null);
+$("nc").onclick=()=>$("dlg").close();
+$("frm").addEventListener("submit",e=>{e.preventDefault();
+const t=$("nt").value.trim(),k=$("nk").value.trim(),ki=keyInfo(k),lines=$("nb").value.split("\n").map(l=>l.trim()).filter(Boolean);
+if(!t||!ki||!lines.length){$("ne").textContent="Add a title, a key like Bb or Gm, and at least one line of chords.";return}
+const sec=[];
+for(const l of lines){const m=l.match(/^(?:([^:|]+):)?(.*)$/);const b=m[2].trim().split("|").map(x=>x.trim()).filter(Boolean);
+for(const bar of b)for(const ch of bar.split(/\s+/))if(!okChord(ch)){$("ne").textContent="I don’t recognize that chord: "+ch.slice(0,20)+". Chords look like Dm7, G7b9, Cmaj7, C6/9 or Bb/D.";return}
+if(!b.length){$("ne").textContent="Every line needs at least one chord.";return}
+sec.push({n:(m[1]||"").trim()||"Form",b:b.join("|")})}
+const song={t,key:k,...ki,sec,custom:1};
+if(ed===null){SONGS.push(song);ed=SONGS.length-1}else SONGS[ed]=song;
+saveCustom();$("dlg").close();pick(ed)});
+renderList();render();
+</script>
+</body>
+</html>
