@@ -117,9 +117,11 @@ main.hassel{padding-bottom:50vh}
 .x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:22px;background:var(--bg);font-size:1.1rem}
 .transport{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));min-height:var(--tb)}
 .pbtn{flex:0 0 auto;min-width:104px;min-height:48px;border:0;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:600;padding:0 18px}
-.tempo{flex:1;flex-direction:row;align-items:center;gap:10px;font-size:.85rem;max-width:420px}
+.tempo{flex:1;min-width:0;flex-direction:row;align-items:center;gap:10px;font-size:.85rem;max-width:420px}
+@media(max-width:420px){.transport{gap:10px;padding-left:12px;padding-right:12px}.pbtn{min-width:92px}.tempo>span{display:none}}
 .tempo input{flex:1;min-width:0;accent-color:var(--acc);height:44px;margin:0}
 .tempo output{min-width:4.6em;color:var(--ink);font-variant-numeric:tabular-nums}
+.ttag{flex:0 0 auto;font-size:.75rem;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);white-space:nowrap}
 .foot{color:var(--mute);font-size:.8rem;margin-top:24px;max-width:70ch}
 dialog{border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);width:min(520px,calc(100% - 24px));padding:18px}
 dialog::backdrop{background:rgba(0,0,0,.5)}
@@ -188,7 +190,7 @@ body{background:#fff;color:#000}
 <main id="main"></main>
 </div>
 <div class="transport" id="transport" role="region" aria-label="Playback"><button id="play" class="pbtn" aria-pressed="false">▶ Play</button>
-<label class="tempo"><span>Tempo</span><input type="range" id="tempo" min="40" max="280" step="4" aria-label="Tempo in beats per minute"><output id="bpm" for="tempo"></output></label></div>
+<label class="tempo"><span>Tempo</span><input type="range" id="tempo" min="40" max="280" step="4" aria-label="Tempo in beats per minute"><output id="bpm" for="tempo"></output></label><span class="ttag" id="ttag" hidden></span></div>
 <dialog id="dlg"><form id="frm" method="dialog"><h2 id="dt" style="margin:0 0 12px">Add your own song</h2>
 <label>Title<input id="nt" type="text"></label>
 <label>Key, such as Bb or Gm<input id="nk" type="text"></label>
@@ -873,9 +875,12 @@ let P={};try{P=JSON.parse(localStorage.getItem(PREF)||"{}")||{}}catch(e){}
 const saved=SONGS.findIndex(s=>s.t===P.song),flag=(v,d)=>typeof v==="boolean"?v:d;
 let S={i:saved>=0?saved:order()[0].i,shift:0,inst:["guitar","piano","both","none"].includes(P.inst)?P.inst:"guitar",
 view:["clean","bars"].includes(P.view)?P.view:"clean",iiv:flag(P.iiv,false),rn:flag(P.rn,false),
-bpm:Math.min(280,Math.max(40,Math.round((+P.bpm||120)/4)*4)),opts:flag(P.opts,matchMedia("(min-width:900px)").matches),
+bpm:Math.min(280,Math.max(40,Math.round((+P.bpm||120)/4)*4)),tune:Math.min(6,Math.max(-6,Math.round(+P.tune||0))),opts:flag(P.opts,matchMedia("(min-width:900px)").matches),
 selN:null,selC:null,pref:{},q:""};
-function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst,view:S.view,iiv:S.iiv,rn:S.rn,bpm:S.bpm,opts:S.opts}))}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst,view:S.view,iiv:S.iiv,rn:S.rn,bpm:S.bpm,tune:S.tune,opts:S.opts}))}catch(e){}}
+// Playback tuning shifts only the sound, for guitars tuned down or up; charts and diagrams stay as written.
+const TUNINGS={"-1":"E♭ tuning","-2":"D tuning","-3":"C♯ tuning","-4":"C tuning","-5":"B tuning","-6":"B♭ tuning","1":"F tuning","2":"F♯ tuning"};
+const signed=k=>(k>0?"+":k<0?"−":"")+Math.abs(k);
 let SEQ=[];
 function render(){const sg=SONGS[S.i],beats=sg.m||4,tonic=(sg.tonic+S.shift)%12,nm=names(tonic,sg.minor);
 const a=document.activeElement;let fk=null;
@@ -910,6 +915,7 @@ ${sg.custom?`<div class="acts"><button id="editS">Edit</button><button id="delS"
 <div class="grp"><span id="dl">Diagrams</span><span class="seg" role="group" aria-labelledby="dl">${seg("i",[["guitar","Guitar"],["piano","Piano"],["both","Both"],["none","Off"]],S.inst)}</span></div>
 <div class="grp"><span id="vl">Chart</span><span class="seg" role="group" aria-labelledby="vl">${seg("v",[["clean","Clean"],["bars","Diagrams in bars"]],S.view)}</span></div>
 <div class="grp"><span id="al">Analysis</span><span class="seg" role="group" aria-labelledby="al"><button data-a="iiv" aria-pressed="${S.iiv}">ii–V brackets</button><button data-a="rn" aria-pressed="${S.rn}">Numerals</button></span></div>
+<label>Playback tuning<select id="tune">${[...Array(13)].map((_,j)=>{const k=j-6;return`<option value="${k}"${k===S.tune?" selected":""}>${k?`${signed(k)} semitone${Math.abs(k)>1?"s":""}${TUNINGS[k]?` (${TUNINGS[k]})`:""}`:"Standard"}</option>`}).join("")}</select></label>
 </div></details></div>`;
 const sel=S.selN!==null?toks[S.selN]:null;
 if(sel){const t=sel,c=t.c,alts=gCands(c),used=t.g.join();
@@ -945,7 +951,7 @@ if(fk){const el=$("main").querySelector(fk);if(el)el.focus({preventScroll:true})
 // Playback: piano voicings through Web Audio, scheduled slightly ahead of time so timing stays steady.
 let AC=null,OUT=null;const PB={on:false,i:0,t:0,timer:0,cur:null,tm:[]};
 function setPlayUI(){$("play").textContent=PB.on?"■ Stop":"▶ Play";$("play").setAttribute("aria-pressed",PB.on)}
-function tone(m,t,d,g,type){const o=AC.createOscillator(),a=AC.createGain();o.type=type;o.frequency.value=440*2**((m-69)/12);
+function tone(m,t,d,g,type){const o=AC.createOscillator(),a=AC.createGain();o.type=type;o.frequency.value=440*2**((m+S.tune-69)/12);
 a.gain.setValueAtTime(0,t);a.gain.linearRampToValueAtTime(g,t+.015);a.gain.setTargetAtTime(g*.25,t+.02,.35);a.gain.setTargetAtTime(0,t+Math.max(.05,d-.06),.04);
 o.connect(a);a.connect(OUT);o.start(t);o.stop(t+d+.3)}
 function sound(v,t,d){tone(v.lh-12,t,d,.3,"sine");tone(v.lh,t,d,.05,"triangle");v.rh.forEach(m=>tone(m,t,d*.92,.065,"triangle"))}
@@ -964,6 +970,8 @@ function stop(){PB.on=false;clearInterval(PB.timer);PB.tm.forEach(clearTimeout);
 document.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));setPlayUI()}
 $("play").onclick=()=>PB.on?stop():start();
 $("tempo").value=S.bpm;$("bpm").textContent=S.bpm+" bpm";
+function setTuneUI(){const t=$("ttag");t.hidden=!S.tune;t.textContent=signed(S.tune);t.title=S.tune?`Playing ${Math.abs(S.tune)} semitone${Math.abs(S.tune)>1?"s":""} ${S.tune<0?"down":"up"}`:""}
+setTuneUI();
 $("tempo").oninput=e=>{S.bpm=+e.target.value;$("bpm").textContent=S.bpm+" bpm";savePrefs()};
 // One set of delegated handlers on #main, so re-rendering never strands focus.
 let lastSel=null;
@@ -985,7 +993,8 @@ render();
 const el=$("main").querySelector(q),d=document.querySelector(".detail");if(!el)return;
 scrollBy(0,el.getBoundingClientRect().top-y);if(!d)return;const r=el.getBoundingClientRect(),dr=d.getBoundingClientRect();
 if(matchMedia("(min-width:900px)").matches){if(r.top<dr.bottom+8)scrollBy(0,r.top-dr.bottom-8)}else if(r.bottom>dr.top-8)scrollBy(0,r.bottom-dr.top+8)});
-$("main").addEventListener("change",e=>{if(e.target.id==="key"){S.shift=+e.target.value;S.pref={};render()}});
+$("main").addEventListener("change",e=>{if(e.target.id==="key"){S.shift=+e.target.value;S.pref={};render()}
+if(e.target.id==="tune"){S.tune=+e.target.value;setTuneUI();savePrefs()}});
 $("main").addEventListener("toggle",e=>{if(e.target.id==="opts"){S.opts=e.target.open;savePrefs()}},true);
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.selN!==null&&!$("dlg").open)closeDetail();
 if(e.key===" "&&e.target===document.body){e.preventDefault();PB.on?stop():start()}});

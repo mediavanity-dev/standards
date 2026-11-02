@@ -13,6 +13,7 @@ Chord charts for jazz standards, with guitar and piano voicings, transposition a
 - **Charts that read like a fake book:** four bars per row, % for repeated bars, first and second endings, bar numbers and a form summary such as "AABA · 32 bars".
 - **Analysis overlays:** optional brackets under ii–V pairs and Roman numerals relative to the song's key.
 - **Playback:** plays the changes at any tempo from 40 to 280 bpm, highlighting the current bar, and loops until you stop it. On a computer, the space bar starts and stops playback.
+- **Playback tuning:** shifts only the sound, from 6 semitones down to 6 up, to play along on a guitar tuned down (E♭ or D tuning) or up. Chord names and diagrams stay as written, and a small tag beside the tempo shows the shift. It's under View options.
 - **Your own songs:** add, edit and delete songs in the page. They're saved in your browser on that device.
 
 ## Running it
