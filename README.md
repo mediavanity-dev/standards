@@ -9,7 +9,8 @@ Chord charts for jazz standards, with guitar and piano voicings, transposition a
 - **159 tunes:** ballads, bebop heads, blues, rhythm changes, bossa novas and modal tunes.
 - **Any key:** pick a key from the menu and every chord, diagram and note name transposes with it.
 - **Guitar and piano diagrams:** guitar uses movable jazz shapes. Piano shows a left-hand bass note and a right-hand voicing. Voicings are chosen across the whole tune so each chord moves as little as possible from the one before.
-- **Chord detail:** tap any chord to see its notes spelled by scale degree, its piano voicing and every guitar voicing. Tap a voicing to use it everywhere in the tune.
+- **Chord detail:** tap any chord to see its notes spelled by scale degree, its piano voicing and every guitar voicing. Tap a voicing to use it everywhere in the tune. On phones the detail fills the screen.
+- **Fretboard for soloing:** from the chord detail, show every chord tone across frets 0–15, labeled by degree or note name. The root is orange, the guide tones (3rds and 7ths) are filled and other chord tones are outlined.
 - **Charts that read like a fake book:** four bars per row, % for repeated bars, first and second endings, bar numbers and a form summary such as "AABA · 32 bars".
 - **Analysis overlays:** optional brackets under ii–V pairs and Roman numerals relative to the song's key.
 - **Playback:** plays the changes at any tempo from 40 to 280 bpm, highlighting the current bar, and loops until you stop it. On a computer, the space bar starts and stops playback.

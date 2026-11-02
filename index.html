@@ -99,8 +99,8 @@ select{padding:0 10px;border:1px solid var(--line);border-radius:8px;background:
 .end .lbl{display:inline-block;font-size:.8rem;font-weight:600;padding:2px 8px;border-top:2px solid var(--ink);border-left:2px solid var(--ink);margin-bottom:4px}
 .s{stroke:var(--ink);stroke-width:.8;fill:none}
 .t{fill:var(--ink)}
-.detail{position:fixed;left:0;right:0;bottom:calc(var(--tb) + env(safe-area-inset-bottom,0px));z-index:20;background:var(--panel);border-top:1px solid var(--line);border-radius:16px 16px 0 0;max-height:52vh;overflow:auto;padding:14px 14px 16px;box-shadow:0 -8px 30px rgba(0,0,0,.25);display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;justify-content:center}
-main.hassel{padding-bottom:50vh}
+/* On phones the chord detail fills the screen above the playback bar, so nothing in it is cramped. */
+.detail{position:fixed;top:0;left:0;right:0;bottom:calc(var(--tb) + env(safe-area-inset-bottom,0px));z-index:20;background:var(--panel);overflow:auto;overscroll-behavior:contain;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 24px;display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center;align-content:flex-start;justify-content:center}
 .detail .dt{flex:1 1 100%;order:-1;padding-right:48px}
 .detail .nm{font-size:2rem;font-weight:800;line-height:1}
 .detail .nm sup{font-size:1.1rem;font-weight:600}
@@ -108,13 +108,20 @@ main.hassel{padding-bottom:50vh}
 .notes small{color:var(--mute);font-size:.68rem;margin-left:2px}
 .dg svg{width:110px;height:auto}
 .dp svg{width:min(78vw,340px);height:auto}
-.alts{flex:1 1 100%;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.alts{flex:1 1 100%;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
 .alts button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:4px 6px;min-width:64px}
 .alts button[aria-pressed=true]{border-color:var(--acc);box-shadow:inset 0 0 0 2px var(--acc)}
 .alts svg{width:48px;height:auto}
 .alts small{font-size:.65rem;color:var(--mute);white-space:nowrap}
-.hint{flex:1 1 100%}
-.x{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:22px;background:var(--bg);font-size:1.1rem}
+.hint{flex:1 1 100%;text-align:center}
+.x{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:10px;z-index:21;width:44px;height:44px;border:0;border-radius:22px;background:var(--bg);font-size:1.1rem}
+.fbw{flex:1 1 100%;border-top:1px solid var(--line);padding-top:12px}
+.fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.fbtog{min-height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:600}
+.fb svg{display:block;margin:10px auto 0;height:auto}
+.fb svg.v{width:min(100%,280px)}
+.fb svg.h{display:none;width:100%}
+.fb .legend{text-align:center}
 .transport{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--panel);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:12px;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));min-height:var(--tb)}
 .pbtn{flex:0 0 auto;min-width:104px;min-height:48px;border:0;border-radius:999px;background:var(--acc);color:var(--onacc);font-weight:600;padding:0 18px}
 .tempo{flex:1;min-width:0;flex-direction:row;align-items:center;gap:10px;font-size:.85rem;max-width:420px}
@@ -164,9 +171,13 @@ h1{font-size:1.6rem}
 .list{max-height:none}
 .bar h2{font-size:2rem}
 .jumps,.pal{margin-left:0;margin-right:0;padding-left:0;padding-right:0}
-.detail{position:sticky;top:8px;bottom:auto;z-index:5;border:1px solid var(--line);border-radius:12px;max-height:none;box-shadow:0 8px 24px rgba(0,0,0,.12);margin-bottom:16px;justify-content:flex-start;padding:16px 60px 16px 16px}
+.detail{position:sticky;top:8px;bottom:auto;z-index:5;border:1px solid var(--line);border-radius:12px;max-height:calc(100vh - var(--tb) - 24px);box-shadow:0 8px 24px rgba(0,0,0,.12);margin-bottom:16px;justify-content:flex-start;padding:16px 60px 16px 16px}
 .detail .dt{flex:1 1 220px;order:0;padding-right:0}
-main.hassel{padding-bottom:0}
+.x{position:absolute;top:8px;right:8px}
+.alts{justify-content:flex-start}
+.hint{text-align:left}
+.fb svg.v{display:none}
+.fb svg.h{display:block}
 }
 @media print{
 aside,.opts,.acts,.x,.detail,.transport,.jumps,.pal{display:none!important}
@@ -848,6 +859,25 @@ else w+=`<rect x="${wx(m)}" y="0" width="10" height="36" fill="${fill||"var(--ke
 const nmap=new Map(c.sp.map(x=>[x.pc,x.name])),oct=m=>Math.floor(m/12)-1,name=m=>(nmap.get(m%12)||FL[m%12])+oct(m);
 const label=`Piano: left hand ${(c.bass?c.bass.n:c.root)+oct(v.lh)}; right hand ${v.rh.map(name).join(" ")}`;
 return`<svg class="pn" viewBox="0 0 ${wx(end)+10} 36" role="img" aria-label="${esc(label)}">${w}${b}</svg>`}
+// Fretboard, frets 0–15, marking every chord tone: root orange, guide tones (3rds, 7ths, 6ths) filled, others outlined.
+// "v" runs the neck down the screen for phones, "h" across it like tab (high string on top) for wide screens.
+const GUIDE=new Set(["3","b3","4","6","bb7","b7","7"]);
+function fbSVG(c,dir){const v=dir==="v",tones=new Map(c.sp.map(x=>[x.pc,x])),bass=c.bass&&!tones.has(c.bass.pc)?c.bass:null;
+const W=v?236:650,H=v?500:164,L0=v?28:16,L1=v?208:136,N=40,SP=v?30:40,mid=(L0+L1)/2;
+const pt=(s,f)=>{const a=v?28+s*36:16+(5-s)*24,b=f===0?(v?22:20):N+(f-.5)*SP;return v?[a,b]:[b,a]};
+const ln=(a0,b0,a1,b1,w)=>`<line x1="${v?a0:b0}" y1="${v?b0:a0}" x2="${v?a1:b1}" y2="${v?b1:a1}" stroke="var(--ink)" stroke-width="${w}"/>`;
+let o=`<svg class="${dir}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(`Fretboard, frets 0 to 15, showing every ${c.full} chord tone`)}">`;
+for(const f of[3,5,7,9,12,15]){const b=N+(f-.5)*SP,dots=f===12?[mid-24,mid+24]:[mid];
+for(const a of dots)o+=`<circle cx="${v?a:b}" cy="${v?b:a}" r="4" fill="var(--line)"/>`;
+o+=v?`<text class="t" x="10" y="${b+3}" font-size="9" text-anchor="middle">${f}</text>`:`<text class="t" x="${b}" y="${H-6}" font-size="9" text-anchor="middle">${f}</text>`}
+for(let j=0;j<=15;j++)o+=ln(L0,N+j*SP,L1,N+j*SP,j===0?3:.7);
+for(let s=0;s<6;s++){const a=v?28+s*36:16+(5-s)*24;o+=ln(a,N,a,N+15*SP,.8)}
+const lab=x=>S.fbl==="name"?x.name:x.d==="1"?"R":x.d;
+for(let s=0;s<6;s++)for(let f=0;f<=15;f++){const p=(OPEN[s]+f)%12,t=tones.get(p);if(!t&&!(bass&&p===bass.pc))continue;
+const[x,y]=pt(s,f),kind=!t?"bass":t.d==="1"?"root":GUIDE.has(t.d)?"guide":"other",txt=t?lab(t):bass.n;
+const fill=kind==="root"?"var(--root)":kind==="guide"?"var(--acc)":"var(--panel)",stroke=kind==="bass"?"var(--root)":"var(--acc)",ink=kind==="root"||kind==="guide"?"var(--onacc)":stroke;
+o+=`<circle cx="${x}" cy="${y}" r="10.5" fill="${fill}" stroke="${stroke}" stroke-width="${kind==="bass"?2:1.5}"/><text x="${x}" y="${y+3.2}" font-size="${txt.length>2?7.5:9}" font-weight="700" text-anchor="middle" fill="${ink}">${esc(txt)}</text>`}
+return o+"</svg>"}
 // Analysis: ii–V pairs and Roman numerals relative to the song's key.
 const MINOR=/^(m|m6|m7|m9|m11|m7b5)$/,DOM=/^(7|9|13|7sus|7b9|7#9|7#5|7b5|7#11|7b13|7alt)$/;
 const RN=["I","bII","II","bIII","III","IV","#IV","V","bVI","VI","bVII","VII"];
@@ -875,16 +905,18 @@ let P={};try{P=JSON.parse(localStorage.getItem(PREF)||"{}")||{}}catch(e){}
 const saved=SONGS.findIndex(s=>s.t===P.song),flag=(v,d)=>typeof v==="boolean"?v:d;
 let S={i:saved>=0?saved:order()[0].i,shift:0,inst:["guitar","piano","both","none"].includes(P.inst)?P.inst:"guitar",
 view:["clean","bars"].includes(P.view)?P.view:"clean",iiv:flag(P.iiv,false),rn:flag(P.rn,false),
-bpm:Math.min(280,Math.max(40,Math.round((+P.bpm||120)/4)*4)),tune:Math.min(6,Math.max(-6,Math.round(+P.tune||0))),opts:flag(P.opts,matchMedia("(min-width:900px)").matches),
+bpm:Math.min(280,Math.max(40,Math.round((+P.bpm||120)/4)*4)),tune:Math.min(6,Math.max(-6,Math.round(+P.tune||0))),fb:flag(P.fb,false),fbl:P.fbl==="name"?"name":"deg",opts:flag(P.opts,matchMedia("(min-width:900px)").matches),
 selN:null,selC:null,pref:{},q:""};
-function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst,view:S.view,iiv:S.iiv,rn:S.rn,bpm:S.bpm,tune:S.tune,opts:S.opts}))}catch(e){}}
+function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst,view:S.view,iiv:S.iiv,rn:S.rn,bpm:S.bpm,tune:S.tune,fb:S.fb,fbl:S.fbl,opts:S.opts}))}catch(e){}}
 // Playback tuning shifts only the sound, for guitars tuned down or up; charts and diagrams stay as written.
 const TUNINGS={"-1":"E♭ tuning","-2":"D tuning","-3":"C♯ tuning","-4":"C tuning","-5":"B tuning","-6":"B♭ tuning","1":"F tuning","2":"F♯ tuning"};
 const signed=k=>(k>0?"+":k<0?"−":"")+Math.abs(k);
-let SEQ=[];
+let SEQ=[],shownSel=null;
 function render(){const sg=SONGS[S.i],beats=sg.m||4,tonic=(sg.tonic+S.shift)%12,nm=names(tonic,sg.minor);
 const a=document.activeElement;let fk=null;
-if(a&&$("main").contains(a)){for(const k of["n","pn","i","v","a","g","j"])if(a.dataset[k]!==undefined){fk=`[data-${k}="${a.dataset[k]}"]`;break}
+// Keep the detail panel's own scroll position when it re-renders for the same chord (choosing a voicing, opening the fretboard).
+const dOld=document.querySelector(".detail"),dTop=dOld&&S.selN===shownSel?dOld.scrollTop:0;
+if(a&&$("main").contains(a)){for(const k of["n","pn","i","v","a","g","j","fl"])if(a.dataset[k]!==undefined){fk=`[data-${k}="${a.dataset[k]}"]`;break}
 if(!fk&&a.id)fk="#"+a.id}
 const cache=new Map(),sym=ch=>{if(cache.has(ch))return cache.get(ch);const p=parse(ch),pc=(p.pc+S.shift)%12;
 const root=S.shift===0?ch.match(/^[A-G][b#]?/)[0]:nm[pc];
@@ -926,11 +958,14 @@ h+=`<div class="detail" role="region" aria-label="Chord detail"><button class="x
 ${c.exact?"":`<p>Voiced from the nearest common chord (${degs(c.ty).join(" ")}); the written chord adds more.</p>`}
 ${miss.length?`<p>This guitar voicing leaves out the ${miss.join(", ")}.</p>`:""}
 ${c.noBass?`<p>No close guitar shape puts ${esc(c.bass.n)} in the bass, so the guitar plays the chord without it.</p>`:""}
-<p>Orange is the bass note. The piano plays it with the left hand and the rest with the right. Voicings are chosen to move smoothly from the chord before.</p></div>
+<p>Orange is the bass note. Voicings move smoothly from the chord before.</p></div>
 <div class="dg">${gSVG(t.g)}</div><div class="dp">${pSVG(t.p,c)}</div>
 ${alts.length>1?`<div class="alts" role="group" aria-label="Guitar voicings">${alts.map(fr=>{const k=fr.join();
 return`<button data-g="${k}" aria-pressed="${k===used}" aria-label="${esc(`${ORD[lowStr(fr)]} string root, fret ${minFret(fr)}`)}">${gSVG(fr)}<small>${ORD[lowStr(fr)]} str · fr ${minFret(fr)}</small></button>`}).join("")}</div>
-<p class="hint">Tap a voicing to use it for every ${esc(c.full)} in this tune${S.pref[t.ch]?"; tap it again to go back to automatic":""}.</p>`:""}</div>`}
+<p class="hint">Tap a voicing to use it for every ${esc(c.full)} in this tune${S.pref[t.ch]?"; tap it again to go back to automatic":""}.</p>`:""}
+<div class="fbw"><div class="fbbar"><button id="fbBtn" class="fbtog" aria-expanded="${S.fb}" aria-controls="fbp">${S.fb?"Hide fretboard":"Show all chord tones on the fretboard"}</button>
+${S.fb?`<span class="seg" role="group" aria-label="Fretboard labels">${seg("fl",[["deg","Degrees"],["name","Notes"]],S.fbl)}</span>`:""}</div>
+${S.fb?`<div class="fb" id="fbp">${fbSVG(c,"v")}${fbSVG(c,"h")}<p class="legend">Orange is the root. Filled notes are the 3rd and 7th, the guide tones; outlined notes are the other chord tones.</p></div>`:""}</div></div>`}
 if(S.view==="clean"&&S.inst!=="none"){const seen=new Set(),pal=toks.filter(t=>!seen.has(t.c.full)&&seen.add(t.c.full));
 h+=`<div class="pal" role="group" aria-label="Chords in this tune">${pal.map(t=>`<button data-pn="${t.n}" data-c="${esc(t.ch)}" aria-pressed="${S.selC===t.ch}" aria-label="${esc(t.c.full)}">${symH(t.c)}${dia(t)}</button>`).join("")}</div>`}
 if(blocks.length>1)h+=`<nav class="jumps" aria-label="Sections">${blocks.map((B,k)=>`<button data-j="${k}">${esc(B.n)}</button>`).join("")}</nav>`;
@@ -945,7 +980,7 @@ blocks.forEach((B,k)=>{const info=B.e?`${B.shared.length+B.ends[0].length} bars 
 h+=`<section class="sec" id="sec${k}"><h3>${esc(B.n)}<span>${info}</span></h3>${grid(B.sh)}${B.e?`<div class="ends">${B.e.map((e,j)=>`<div class="end"><span class="lbl">${j+1}.</span>${grid(e,Math.min(e.length,4))}</div>`).join("")}</div>`:""}</section>`});
 h+=`</div><p class="foot">Chords are the commonly played changes for each standard, in the key most often used. Many were checked against a standard fake book; charts vary between books and players, so check them against your favorite recording. Use “Add your own song” to build out your library; custom songs are saved on this device.</p>`;
 $("main").innerHTML=h;
-$("main").classList.toggle("hassel",!!sel);
+const dNew=document.querySelector(".detail");if(dNew&&dTop)dNew.scrollTop=dTop;shownSel=S.selN;
 savePrefs();
 if(fk){const el=$("main").querySelector(fk);if(el)el.focus({preventScroll:true})}}
 // Playback: piano voicings through Web Audio, scheduled slightly ahead of time so timing stays steady.
@@ -958,7 +993,8 @@ function sound(v,t,d){tone(v.lh-12,t,d,.3,"sine");tone(v.lh,t,d,.05,"triangle");
 function mark(bar){if(!PB.on)return;PB.cur=bar;document.querySelectorAll(".cell.now").forEach(x=>x.classList.remove("now"));
 const el=document.querySelector(`.cell[data-bar="${bar}"]`);if(!el)return;el.classList.add("now");
 const r=el.getBoundingClientRect(),d=document.querySelector(".detail"),wide=matchMedia("(min-width:900px)").matches;
-const top=wide&&d?d.getBoundingClientRect().bottom:0,bottom=!wide&&d?d.getBoundingClientRect().top:$("transport").getBoundingClientRect().top;
+if(d&&!wide)return; // the full-screen detail covers the chart on phones
+const top=d?d.getBoundingClientRect().bottom:0,bottom=$("transport").getBoundingClientRect().top;
 if(r.top<top+4||r.bottom>bottom-4)scrollBy({top:r.top-(top+(bottom-top-r.height)/2),behavior:"smooth"})}
 function tick(){const spb=60/S.bpm;while(PB.t<AC.currentTime+.15){const ev=SEQ[PB.i%SEQ.length],d=ev.dur*spb,at=PB.t;sound(ev.v,at,d);
 PB.tm.push(setTimeout(()=>mark(ev.bar),Math.max(0,(at-AC.currentTime)*1000)));PB.t+=d;PB.i++}
@@ -985,14 +1021,17 @@ if(t.dataset.v){S.view=t.dataset.v;render();return}
 if(t.dataset.a){S[t.dataset.a]=!S[t.dataset.a];render();return}
 if(t.dataset.j!==undefined){$("sec"+t.dataset.j).scrollIntoView({behavior:"smooth",block:"start"});return}
 if(t.dataset.g){const k=S.selC;if(S.pref[k]===t.dataset.g)delete S.pref[k];else S.pref[k]=t.dataset.g;render();return}
+if(t.id==="fbBtn"){S.fb=!S.fb;render();return}
+if(t.dataset.fl){S.fbl=t.dataset.fl;render();return}
 const nn=t.dataset.n!==undefined?t.dataset.n:t.dataset.pn;if(nn===undefined)return;
 const y=t.getBoundingClientRect().top,q=t.dataset.pn!==undefined?`[data-pn="${nn}"]`:`[data-n="${nn}"]`;lastSel=q;
 if(S.selN===+nn)S.selN=S.selC=null;else{S.selN=+nn;S.selC=t.dataset.c}
 render();
-// Keep the tapped chord where it was, and clear of the detail panel (sticky on wide screens, a bottom sheet on phones).
 const el=$("main").querySelector(q),d=document.querySelector(".detail");if(!el)return;
+// Phones: the detail opens full screen, so move focus into it. Wide screens: keep the tapped chord in place, clear of the sticky panel.
+if(!matchMedia("(min-width:900px)").matches){if(d)$("closeD").focus({preventScroll:true});return}
 scrollBy(0,el.getBoundingClientRect().top-y);if(!d)return;const r=el.getBoundingClientRect(),dr=d.getBoundingClientRect();
-if(matchMedia("(min-width:900px)").matches){if(r.top<dr.bottom+8)scrollBy(0,r.top-dr.bottom-8)}else if(r.bottom>dr.top-8)scrollBy(0,r.bottom-dr.top+8)});
+if(r.top<dr.bottom+8)scrollBy(0,r.top-dr.bottom-8)});
 $("main").addEventListener("change",e=>{if(e.target.id==="key"){S.shift=+e.target.value;S.pref={};render()}
 if(e.target.id==="tune"){S.tune=+e.target.value;setTuneUI();savePrefs()}});
 $("main").addEventListener("toggle",e=>{if(e.target.id==="opts"){S.opts=e.target.open;savePrefs()}},true);
