@@ -100,9 +100,7 @@ body{background:#fff;color:#000}
 <h1>Standards chord charts</h1>
 <p class="sub"><span id="cnt"></span> tunes. Pick one, then tap any chord for a closer look.</p>
 <button id="tog" class="tog" aria-expanded="false">Choose a song</button>
-<div id="picker"><input type="search" id="q" placeholder="Search songs, “blues”, “rhythm”" aria-label="Search songs">
-<label style="flex-direction:row;align-items:center;gap:8px;margin-top:8px;min-height:44px;font-size:.9rem"><input type="checkbox" id="pd"> Public domain only</label>
-<ul class="list" id="list"></ul>
+<div id="picker"><input type="search" id="q" placeholder="Search songs, “blues”, “rhythm”" aria-label="Search songs"><ul class="list" id="list"></ul>
 <button id="add" class="addbtn">Add your own song</button></div>
 </aside>
 <main id="main"></main>
@@ -127,7 +125,6 @@ const rc=(t,o)=>({t,key:"Bb",note:"Rhythm changes",sec:[{n:"A",x:2,b:RCA},{n:"B"
 const BBJ="Bb7|Eb7|Bb7|Fm7 Bb7|Eb7|Edim7|Bb7 G7b9|Cm7 F7|Dm7 G7|Cm7 F7|Bb7 G7|Cm7 F7";
 const blues=(t,key,b,note)=>({t,key,note:note||"12-bar blues",sec:[{n:"Blues",b}]});
 // Common changes as typically played. Bars split by "|", chords in a bar by spaces. Edit or add songs here.
-// pd:1 marks US works published before 1931.
 const SONGS=[
 {t:"All the Things You Are",key:"Ab",sec:[
 {n:"A",b:"Fm7|Bbm7|Eb7|Abmaj7|Dbmaj7|Dm7 G7|Cmaj7|Cmaj7"},
@@ -162,7 +159,7 @@ blues("Bb Jazz Blues","Bb",BBJ),
 {n:"Last A",b:"Dm7 G7|Dm7 G7|Em7 A7|Em7 A7|Am7 D7|Abm7 Db7|Cmaj7|Cmaj7"}]},
 {t:"Tune Up",key:"D",sec:[
 {n:"Form",b:"Em7|A7|Dmaj7|Dmaj7|Dm7|G7|Cmaj7|Cmaj7|Cm7|F7|Bbmaj7|Bbmaj7|Em7 A7|Dmaj7|Dmaj7|Dmaj7"}]},
-rc("I Got Rhythm",{pd:1}),
+rc("I Got Rhythm"),
 rc("Oleo"),rc("Anthropology"),rc("Rhythm-a-Ning"),rc("Cotton Tail"),
 blues("Now’s the Time","F","F7|Bb7|F7|F7|Bb7|Bb7|F7|D7|Gm7|C7|F7 D7|Gm7 C7"),
 blues("Billie’s Bounce","F","F7|Bb7|F7|Cm7 F7|Bb7|Bdim7|F7|Am7 D7|Gm7|C7|F7 D7|Gm7 C7"),
@@ -212,16 +209,16 @@ blues("Equinox","C#m","C#m7|C#m7|C#m7|C#m7|F#m7|F#m7|C#m7|C#m7|A7|G#7|C#m7|C#m7"
 {t:"Just Friends",key:"G",sec:[
 {n:"First 16",b:"Cmaj7|Cmaj7|Cm7|F7|Gmaj7|Gmaj7|Bbm7|Eb7|Am7|D7|Gmaj7|Em7|A7|A7|Am7|D7"},
 {n:"Last 16",b:"Cmaj7|Cmaj7|Cm7|F7|Gmaj7|Gmaj7|Bbm7|Eb7|Am7|D7|Bm7|E7|Am7|D7|G6|Am7 D7"}]},
-{t:"Sweet Georgia Brown",key:"F",pd:1,sec:[
+{t:"Sweet Georgia Brown",key:"F",sec:[
 {n:"A",b:"D7|D7|G7|G7|C7|C7|F6|F6"},
 {n:"B",b:"D7|D7|G7|G7|Dm7|A7|Dm7|A7"},
 {n:"A",b:"D7|D7|G7|G7|C7|C7|F6|F6"},
 {n:"C",b:"D7|D7|G7|G7|F6 F#dim7|Gm7 C7|F6|Gm7 C7"}]},
-{t:"Honeysuckle Rose",key:"F",pd:1,sec:[
+{t:"Honeysuckle Rose",key:"F",sec:[
 {n:"A",x:2,b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|Cm7 F7"},
 {n:"B",b:"Cm7 F7|Cm7 F7|Bb6|Bb6|Dm7 G7|Dm7 G7|Gm7|C7"},
 {n:"Last A",b:"Gm7 C7|Gm7 C7|Gm7 C7|Gm7 C7|F6|F6|F6|Gm7 C7"}]},
-{t:"On the Sunny Side of the Street",key:"C",pd:1,sec:[
+{t:"On the Sunny Side of the Street",key:"C",sec:[
 {n:"A",x:2,b:"C6|E7|F6|G7|Am7|D7|Dm7|G7"},
 {n:"B",b:"Gm7|C7|Fmaj7|Fmaj7|D7|D7|Dm7|G7"},
 {n:"Last A",b:"C6|E7|F6|G7|Am7|D7|Dm7 G7|C6"}]},
@@ -284,7 +281,7 @@ blues("Birk’s Works","Fm","Fm7|Fm7|Fm7|Fm7|Bbm7|Bbm7|Fm7|Fm7|Db7|C7|Fm7|C7","M
 {n:"B",x:2,b:"Am7|Am7|Am7|Am7|Am7|Am7|Am7|Am7"},
 {n:"Last A",b:"Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7|Gm7"}]},
 {t:"Chameleon",key:"Bbm",note:"Vamp",sec:[{n:"Vamp",b:"Bbm7|Eb7|Bbm7|Eb7"}]},
-{t:"When the Saints Go Marching In",key:"F",pd:1,note:"Traditional",sec:[
+{t:"When the Saints Go Marching In",key:"F",note:"Traditional",sec:[
 {n:"Form",b:"F|F|F|F|F|F|C7|C7|F|F7|Bb|Bbm|F|C7|F|F"}]}
 ];
 // Guitar voicings: strings 6..1, offsets from the root fret, null = muted. Each type has a 6th-string-root
@@ -351,7 +348,7 @@ const base=t=>t.replace(/^(the|a|an)\s+/i,"");
 const order=()=>SONGS.map((s,i)=>({s,i})).sort((a,b)=>base(a.s.t).localeCompare(base(b.s.t)));
 let P={};try{P=JSON.parse(localStorage.getItem(PREF)||"{}")||{}}catch(e){}
 const saved=SONGS.findIndex(s=>s.t===P.song);
-let S={i:saved>=0?saved:order()[0].i,shift:0,inst:["guitar","piano","both","none"].includes(P.inst)?P.inst:"guitar",sel:null,q:"",pd:false};
+let S={i:saved>=0?saved:order()[0].i,shift:0,inst:["guitar","piano","both","none"].includes(P.inst)?P.inst:"guitar",sel:null,q:""};
 function savePrefs(){try{localStorage.setItem(PREF,JSON.stringify({song:SONGS[S.i].t,inst:S.inst}))}catch(e){}}
 function render(){const sg=SONGS[S.i];const tonic=(sg.tonic+S.shift)%12,nm=names(tonic,sg.minor);
 const a=document.activeElement;let fk=null;
@@ -361,7 +358,7 @@ const bass=p.bass?{pc:(p.bass.pc+S.shift)%12,n:S.shift===0?p.bass.n:nm[(p.bass.p
 const suf=p.q+(bass?"/"+bass.n:"");return{...p,pc:(p.pc+S.shift)%12,bass,root,suf,full:root+suf}};
 const keyOpts=[...Array(12)].map((_,k)=>{const t=(sg.tonic+k)%12;return`<option value="${k}"${k===S.shift?" selected":""}>${names(t,sg.minor)[t]}${sg.minor?"m":""}${k===0?" (common)":""}</option>`}).join("");
 const dia=c=>S.inst==="none"?"":(S.inst==="piano"?piano(c):guitar(c))+(S.inst==="both"?piano(c):"");
-const meta=[sg.note,sg.pd&&"Public domain in the US",sg.custom&&"Your song"].filter(Boolean);
+const meta=[sg.note,sg.custom&&"Your song"].filter(Boolean);
 let h=`<div class="bar"><h2 tabindex="-1" id="ttl">${esc(sg.t)}</h2>${meta.length?`<p class="meta">${esc(meta.join(" · "))}</p>`:""}
 <label>Key<select id="key">${keyOpts}</select></label>
 <div class="grp"><span id="dl">Diagrams</span><span class="seg" role="group" aria-labelledby="dl">${[["guitar","Guitar"],["piano","Piano"],["both","Both"],["none","Off"]].map(([k,l])=>`<button data-i="${k}" aria-pressed="${S.inst===k}">${l}</button>`).join("")}</span></div>
@@ -373,7 +370,7 @@ let n=0;
 sg.sec.forEach(s=>{const bars=s.b.split("|");h+=`<section class="sec"><h3>${esc(s.n)}<span>${bars.length} bars${s.x?` · play ×${esc(s.x)}`:""}</span></h3><div class="grid">`;
 bars.forEach(bar=>{h+=`<div class="cell">`;bar.trim().split(/\s+/).forEach(ch=>{const c=sym(ch);const on=S.sel&&S.sel===ch;
 h+=`<button class="ch" data-n="${n++}" data-c="${esc(ch)}" aria-pressed="${!!on}" aria-label="${esc(c.full)}"><span><b>${esc(c.root)}</b><sup>${esc(c.suf)}</sup></span>${dia(c)}</button>`});h+="</div>"});h+="</div></section>"});
-h+=`<p class="foot">Chords are the commonly played changes for each standard, entered by hand in the key most often used, not copied from any published book. Charts vary between books and players, so check them against your favorite recording. “Public domain” refers to the song itself (US works published before 1931); chord progressions on their own aren’t copyrightable. Use “Add your own song” to build out your library; custom songs are saved on this device.</p>`;
+h+=`<p class="foot">Chords are the commonly played changes for each standard, entered by hand in the key most often used, not copied from any published book. Charts vary between books and players, so check them against your favorite recording. Use “Add your own song” to build out your library; custom songs are saved on this device.</p>`;
 $("main").innerHTML=h;
 $("main").classList.toggle("hassel",!!S.sel);
 savePrefs();
@@ -393,17 +390,15 @@ scrollBy(0,el.getBoundingClientRect().top-y);const d=document.querySelector(".de
 if(d){const lim=d.getBoundingClientRect().bottom+8,top=el.getBoundingClientRect().top;if(top<lim)scrollBy(0,top-lim)}}});
 $("main").addEventListener("change",e=>{if(e.target.id==="key"){S.shift=+e.target.value;render()}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&S.sel&&!$("dlg").open)closeDetail()});
-function renderList(){const rows=order().filter(({s})=>(s.t+" "+(s.note||"")).toLowerCase().includes(S.q)&&(!S.pd||s.pd));
+function renderList(){const rows=order().filter(({s})=>(s.t+" "+(s.note||"")).toLowerCase().includes(S.q));
 $("cnt").textContent=SONGS.length;
 $("list").innerHTML=rows.length?rows.map(({s,i})=>
-`<li><button data-s="${i}" aria-current="${i===S.i}">${esc(s.t)}<small>${s.pd?"public domain · ":""}${s.custom?"yours · ":""}${esc(s.key)}</small></button></li>`).join(""):`<li class="empty">No matching songs.</li>`}
+`<li><button data-s="${i}" aria-current="${i===S.i}">${esc(s.t)}<small>${s.custom?"yours · ":""}${esc(s.key)}</small></button></li>`).join(""):`<li class="empty">No matching songs.</li>`}
 function pick(i){S.i=i;S.shift=0;S.sel=null;renderList();render()}
 $("list").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;
 pick(+b.dataset.s);
 document.querySelector("aside").classList.remove("open");$("tog").setAttribute("aria-expanded","false");scrollTo(0,0);$("ttl").focus({preventScroll:true})});
-$("q").oninput=e=>{S.q=e.target.value.toLowerCase();renderList()};
-$("pd").onchange=e=>{S.pd=e.target.checked;renderList()};
-$("tog").onclick=()=>{const o=document.querySelector("aside").classList.toggle("open");$("tog").setAttribute("aria-expanded",o)};
+$("q").oninput=e=>{S.q=e.target.value.toLowerCase();renderList()};$("tog").onclick=()=>{const o=document.querySelector("aside").classList.toggle("open");$("tog").setAttribute("aria-expanded",o)};
 // Add and edit share one dialog; ed is the index being edited, or null when adding.
 let ed=null;
 function openDlg(i){ed=i;const s=i===null?null:SONGS[i];
